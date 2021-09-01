@@ -1,0 +1,9 @@
+log/*
+!log/test.log
+*.sh
+__pycache__
+.ipynb*
+*.egg*
+pyenv*
+*.ipynb
+.DS*
