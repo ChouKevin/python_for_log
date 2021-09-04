@@ -1,5 +1,5 @@
 log/*
-!log/test.log
+!log/fake*.log
 *.sh
 __pycache__
 .ipynb*
