@@ -1,4 +1,0 @@
-2021-01-31 00:00 INFO  [main] service.a - user 131313 sent hello
-2021-01-31 00:00 INFO  [main] service.a - user 131 sent hello
-2021-01-31 00:00 INFO  [thread-0] service.b - user 131313 is not member
-2021-01-31 00:00 INFO  [thread-0] service.b - user 131 is member, response content : {hi}

@@ -1,5 +1,8 @@
+from datetime import datetime
+from operator import gt, lt
 import os
-from pipline import RegexPipe, WritePipe, Context, AnyContext, PrintPipe
+import glob
+from pipline import Search, Write, AllStep, AnyStep, Context, Date
 from definitinos import *
 from typing import Iterable
 
@@ -17,25 +20,24 @@ def load_logs(paths: Iterable[str]) -> Iterable[str]:
 
 
 def define_pipline() -> Context:
-    any_steps = [
-        RegexPipe('user 131313'),
-        RegexPipe('user 131'),
-    ]
-    anyContext = AnyContext(any_steps)
+    # any_steps = [
+    #     Search('(?=POST|GET)'),
+    # ]
+    # anyContext = AnyStep(any_steps)
     final_steps = [
-        anyContext,
-        WritePipe(os.path.join(DEST_LOG_FOLDER, 'contains_user.log')),
-        RegexPipe('response', block_if_match=True),
-        WritePipe(os.path.join(DEST_LOG_FOLDER, 'remove_response.log'))
+        Search(r'(?=POST|GET)'),
+        Write(os.path.join(DEST_LOG_FOLDER, 'post_get.log')),
+        Date(DATE_TIME_PATTERN, time=datetime(year=2021, month=9, day=7), cmp=gt),
+        # Search('response', block_if_match=True),
+        Write(os.path.join(DEST_LOG_FOLDER, 'after_9_7.log'))
     ]
-    return Context(final_steps)
+    final = AllStep(final_steps)
+    return Context([final])
 
+DATE_TIME_PATTERN = r"(?<=[\[]{1})(?P<day>[\d]{2})[\/]{1}(?P<month>[a-zA-Z]+)[\/]{1}(?P<year>[0-9]+):(?P<hour>[0-9]+):(?P<minute>[0-9]+):(?P<second>[0-9]+) .*(?=[\]])"
 
 if __name__ == '__main__':
-    mass_log_files = ['test.log']
-    log_paths = [os.path.join(SRC_LOG_FOLDER, filename)
-                 for filename in mass_log_files]
+    log_paths = [path
+                 for path in glob.glob(os.path.join(SRC_LOG_FOLDER, 'fake*.log'))]
     pipline = define_pipline()
-    for log_info in load_logs(log_paths):
-        pipline.handle(log_info)
-    pipline.finish()
+    pipline.exec(load_logs(log_paths))

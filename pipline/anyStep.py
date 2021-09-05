@@ -1,8 +1,8 @@
 from typing import Iterable
 from .step import Step
 
-class AnyContext(Step) :
-    """ if there was one step can handle the log, then return the first handled log
+class AnyStep(Step) :
+    """ if there was one step can handle the log, then return the first result
         otherwise return empty
     """
     def __init__(self, steps: Iterable[Step] = []) -> None:
@@ -15,7 +15,7 @@ class AnyContext(Step) :
     def handle(self, line: str) -> str:
         for step in self.steps:
             handled = step.handle(line)
-            if handled and handled.strip():
+            if handled and not handled.isspace():
                 return handled
         return ""
 

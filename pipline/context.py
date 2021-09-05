@@ -1,19 +1,18 @@
-from typing import Iterable, Optional
-from .step import Step
 
-class Context(Step):
+from pipline.step import Step
+from typing import Iterable
+
+
+class Context:
     def __init__(self, steps: Iterable[Step] = []) -> None:
         self.steps = steps
 
-    def __str__(self) -> str:
-        clz_name = self.__class__.__name__
-        return f'class name : {clz_name}, ' + ' '.join([str(step) for step in self.steps])
+    def exec(self, lines: Iterable[Step] = []) -> None:
+        for line in lines:
+            for step in self.steps:
+                line = step.handle(line)
+        self._finish()
 
-    def handle(self, line: str) -> str:
-        for step in self.steps:
-            line = step.handle(line)
-        return line
-
-    def finish(self):
+    def _finish(self):
         for step in self.steps:
             step.finish()
